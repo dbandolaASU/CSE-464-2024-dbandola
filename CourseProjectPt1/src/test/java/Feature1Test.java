@@ -1,6 +1,7 @@
 import org.jgrapht.Graph;
 import org.jgrapht.graph.DefaultEdge;
 import org.jgrapht.nio.ImportException;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -24,6 +25,7 @@ public class Feature1Test {
 
     @Test
     public void testParseValidGraph() {
+        System.out.println("Starting Parse Valid Graph Test\n");
         String validGraphFile = "test.dot";
 
         // parse graph
@@ -47,6 +49,7 @@ public class Feature1Test {
 
     @Test
     public void testParseEmptyGraph() {
+        System.out.println("Starting Parse Empty Graph Test\n");
         String emptyGraphFile = "empty.dot";
 
         // Parse the graph
@@ -59,6 +62,7 @@ public class Feature1Test {
 
     @Test
     public void testParseInvalidGraph() {
+        System.out.println("Starting Parse Invalid Graph Test\n");
         String invalidGraphFile = "invalid.dot";
         try {
             // Parse the graph
@@ -102,7 +106,7 @@ public class Feature1Test {
         // parse graph
         Graph<String, DefaultEdge> graph = test.parseGraph(validGraphFile);
         test.outputGraph("output.dot");
-        Path expectedPath = Paths.get("test.dot");
+        Path expectedPath = Paths.get("src/test/resources/test.dot");
         Path actualPath = Paths.get("output.dot");
 
         // compare contents of output file and the original file
@@ -113,5 +117,70 @@ public class Feature1Test {
             throw new RuntimeException(e);
         }
         assertEquals("Files are not equal!", expectedFileContents, actualFileContents);
+    }
+
+    @Test
+    public void testNodeAdd(){
+        // set up graph
+        String validGraphFile = "test.dot";
+        Graph<String, DefaultEdge> graph = test.parseGraph(validGraphFile);
+        String newNode = "d";
+
+        // add new node
+        test.addNode("d");
+
+        // make sure new node is in graph
+        Assert.assertTrue(graph.containsVertex(newNode));
+    }
+
+    @Test
+    public void testDuplicateNodeAdd(){
+        // set up graph
+        String validGraphFile = "test.dot";
+        Graph<String, DefaultEdge> graph = test.parseGraph(validGraphFile);
+
+        // node count before add
+        int countBeforeAdd = graph.vertexSet().size();
+
+        // add duplicate node
+        test.addNode("a");
+
+        // node count after add
+        int countAfterAdd = graph.vertexSet().size();
+
+        // make sure count is the same (dupe node not added)
+        assertEquals("Duplicate node was added :(", countBeforeAdd, countAfterAdd);
+    }
+
+    @Test
+    public void testEdgeAdd(){
+        // set up graph
+        String validGraphFile = "test.dot";
+        Graph<String, DefaultEdge> graph = test.parseGraph(validGraphFile);
+
+        // add new edge
+        test.addEdge("c", "a");
+
+        // make sure new edge is in graph
+        Assert.assertTrue(graph.containsEdge("c", "a"));
+    }
+
+    @Test
+    public void testDupeEdgeAdd(){
+        // set up graph
+        String validGraphFile = "test.dot";
+        Graph<String, DefaultEdge> graph = test.parseGraph(validGraphFile);
+
+        // edge count before add
+        int countBeforeAdd = graph.edgeSet().size();
+
+        // add new duplicate edge
+        test.addEdge("a", "b");
+
+        // edge count after add
+        int countAfterAdd = graph.edgeSet().size();
+
+        // make sure new edge is in graph
+        assertEquals("Duplicate edge was added :(", countBeforeAdd, countAfterAdd);
     }
 }

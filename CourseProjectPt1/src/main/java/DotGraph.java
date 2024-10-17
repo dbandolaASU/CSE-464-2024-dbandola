@@ -55,12 +55,12 @@ public class DotGraph {
     public void outputGraph(String filepath){
         // create structure of a .dot file and write to the given filepath
         try (FileWriter fileWriter = new FileWriter(filepath)) {
-            fileWriter.write("digraph output {\n");
+            fileWriter.write("digraph testGraph{\n");
             for (String vertex : graph.vertexSet()) {
-                fileWriter.write("  " + vertex + ";\n");
+                fileWriter.write("    " + vertex + ";\n");
             }
             for (DefaultEdge edge : graph.edgeSet()) {
-                fileWriter.write("  " + graph.getEdgeSource(edge) + " -> " + graph.getEdgeTarget(edge) + ";\n");
+                fileWriter.write("    " + graph.getEdgeSource(edge) + " -> " + graph.getEdgeTarget(edge) + ";\n");
             }
             fileWriter.write("}\n");
         } catch (IOException e) {
@@ -68,9 +68,35 @@ public class DotGraph {
         }
     }
 
+    // Feature 2
+
+    public void addNode(String node) {
+        // check if node exists
+        if (graph.containsVertex(node)){
+            System.out.println("Duplicate Node: " + node);
+        }
+        // add node
+        else {
+            graph.addVertex(node);
+            System.out.println("Node " + node + " added!");
+        }
+    }
+
+    public void addEdge(String src, String des){
+        // check if edge exists
+        if (graph.containsEdge(src, des)){
+            System.out.println("Duplicate Vertex: " + src + " -> " + des);
+        }
+        // add edge
+        else {
+            graph.addEdge(src, des);
+        }
+    }
+
     public static void main(String[] args) {
-        //DotGraph test = new DotGraph();
-        //test.parseGraph("test.dot");
-        //System.out.println(test.toString());
+        DotGraph test = new DotGraph();
+        test.parseGraph("localtest.dot");
+        System.out.println(test.toString());
+        test.outputGraph("meow.dot");
     }
 }
