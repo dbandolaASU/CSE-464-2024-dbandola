@@ -1,6 +1,13 @@
 import org.jgrapht.*;
-import org.jgrapht.graph.*;
+import org.jgrapht.Graph;
 import org.jgrapht.nio.dot.*;
+import org.jgrapht.graph.DefaultDirectedGraph;
+import org.jgrapht.graph.DefaultEdge;
+
+import guru.nidi.graphviz.engine.Graphviz;
+import guru.nidi.graphviz.model.Factory;
+import guru.nidi.graphviz.model.MutableGraph;
+import guru.nidi.graphviz.engine.Format;
 
 import java.io.*;
 
@@ -94,6 +101,8 @@ public class DotGraph {
         }
     }
 
+    // Feature 3:
+
     public void addEdge(String src, String des){
         // check if edge exists
         if (graph.containsEdge(src, des)){
@@ -105,6 +114,29 @@ public class DotGraph {
         }
     }
 
+    // Feature 4:
+
+    public void generateGraphImage(String filepath) {
+        MutableGraph g = Factory.mutGraph("Test");
+        // add nodes
+        for (String vertex : graph.vertexSet()) {
+            g.add(Factory.node(vertex));
+        }
+        // add edges
+        for (DefaultEdge edge : graph.edgeSet()) {
+            g.add(Factory.node(graph.getEdgeSource(edge)).link(Factory.node(graph.getEdgeTarget(edge))));
+        }
+        // save image to designated file
+        try{
+            Graphviz.fromGraph(g).width(600).render(Format.PNG).toFile(new File(filepath));
+            System.out.println("Graph image saved to " + filepath);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+    }
+
+    // personal tests :))
     public static void main(String[] args) {
         DotGraph test = new DotGraph();
         test.parseGraph("localtest.dot");
@@ -112,5 +144,6 @@ public class DotGraph {
         String[] addList = {"a", "z", "b", "y"};
         test.addNodes(addList);
         System.out.println(test.toString());
+        test.generateGraphImage("test.png");
     }
 }

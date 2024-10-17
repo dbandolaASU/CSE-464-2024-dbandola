@@ -202,4 +202,17 @@ public class Feature1Test {
         // make sure new edge is in graph
         assertEquals("Duplicate edge was added :(", countBeforeAdd, countAfterAdd);
     }
+
+    @Test
+    public void testImage(){
+        // set up graph
+        String validGraphFile = "test.dot";
+        Graph<String, DefaultEdge> graph = test.parseGraph(validGraphFile);
+        System.out.println(test.toString());
+        String[] addList = {"a", "z", "b", "y"};
+        test.addNodes(addList);
+        System.out.println(test.toString());
+        // print graph and compare
+        test.generateGraphImage("imageTest.png");
+    }
 }
