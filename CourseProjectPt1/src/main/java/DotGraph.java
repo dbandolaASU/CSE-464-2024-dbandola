@@ -82,6 +82,18 @@ public class DotGraph {
         }
     }
 
+    public void addNodes (String[] nodes){
+        for (String node: nodes){
+            if (graph.containsVertex(node)){
+                System.out.println("Node " + node + " already exists!");
+            }
+            else{
+                graph.addVertex(node);
+                System.out.println("Node " + node + " added!");
+            }
+        }
+    }
+
     public void addEdge(String src, String des){
         // check if edge exists
         if (graph.containsEdge(src, des)){
@@ -97,6 +109,8 @@ public class DotGraph {
         DotGraph test = new DotGraph();
         test.parseGraph("localtest.dot");
         System.out.println(test.toString());
-        test.outputGraph("meow.dot");
+        String[] addList = {"a", "z", "b", "y"};
+        test.addNodes(addList);
+        System.out.println(test.toString());
     }
 }

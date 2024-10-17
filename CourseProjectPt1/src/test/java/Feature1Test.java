@@ -134,6 +134,25 @@ public class Feature1Test {
     }
 
     @Test
+    public void testNodesAdd(){
+        // set up graph
+        String validGraphFile = "test.dot";
+        String expectedOutput = "Number of nodes: 5\n" +
+                "Node Labels: [a, b, c, z, y]\n" +
+                "Number of Edges: 2\n" +
+                "Edge Labels: a -> b, b -> c";
+        String[] nodesToAdd = {"a", "b", "z", "y"};
+
+        Graph<String, DefaultEdge> graph = test.parseGraph(validGraphFile);
+
+        // add new nodes
+        test.addNodes(nodesToAdd);
+
+        // make sure new node is in graph
+        Assert.assertEquals(expectedOutput, test.toString());
+    }
+
+    @Test
     public void testDuplicateNodeAdd(){
         // set up graph
         String validGraphFile = "test.dot";
