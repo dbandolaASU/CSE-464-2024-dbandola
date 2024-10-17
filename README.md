@@ -19,6 +19,7 @@ To compile: mvn package
 To test: mvn test
 
 Feature 1 Output:
+
 Parsed graph from localTest.dot
 Number of nodes: 3
 Node Labels: [a, b, c]
@@ -28,6 +29,7 @@ Graph output to file testOutput.dot!
 
 
 Feature 2 Output:
+
 Process finished with exit code 0
 Parsed graph from localTest.dot
 Duplicate Node: a
@@ -39,6 +41,7 @@ Process finished with exit code 0
 
 
 Feature 3 Output: 
+
 Parsed graph from localTest.dot
 Duplicate Vertex: a -> b
 Edge c to a added!
@@ -47,4 +50,5 @@ Process finished with exit code 0
 
 
 Feature 4 Output: 
+
 ![{F1054053-637E-44B5-85C9-69B5EEB1132C}](https://github.com/user-attachments/assets/aefdd0d6-6eeb-4d3c-97fd-a749a740ade9)
