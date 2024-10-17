@@ -70,6 +70,8 @@ public class DotGraph {
                 fileWriter.write("    " + graph.getEdgeSource(edge) + " -> " + graph.getEdgeTarget(edge) + ";\n");
             }
             fileWriter.write("}\n");
+
+            System.out.println("Graph output to file " + filepath + "!");
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -111,6 +113,7 @@ public class DotGraph {
         // add edge
         else {
             graph.addEdge(src, des);
+            System.out.println("Edge " + src + " to " + des + " added!");
         }
     }
 
@@ -139,11 +142,8 @@ public class DotGraph {
     // personal tests :))
     public static void main(String[] args) {
         DotGraph test = new DotGraph();
-        test.parseGraph("localtest.dot");
-        System.out.println(test.toString());
-        String[] addList = {"a", "z", "b", "y"};
-        test.addNodes(addList);
-        System.out.println(test.toString());
-        test.generateGraphImage("test.png");
+        test.parseGraph("localTest.dot");
+        test.addEdge("a", "b");
+        test.addEdge("c", "a");
     }
 }
