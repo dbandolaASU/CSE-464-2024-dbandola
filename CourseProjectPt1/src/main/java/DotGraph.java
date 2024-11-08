@@ -139,11 +139,50 @@ public class DotGraph {
 
     }
 
+    // Project Part 2 #1
+
+    public void removeNode(String label){
+        // check if node doesnt exist
+        if (!graph.containsVertex(label)){
+            System.out.println("Node Does Not Exist: " + label);
+        }
+        // remove node
+        else {
+            graph.removeVertex(label);
+            System.out.println("Node " + label + " removed!");
+        }
+    }
+
+    public void removeNodes(String[] labels){
+        for (String label: labels){
+            if (!graph.containsVertex(label)){
+                System.out.println("Node Does Not Exist: " + label);
+            }
+            else{
+                graph.removeVertex(label);
+                System.out.println("Node " + label + " removed!");
+            }
+        }
+    }
+
+    public void removeEdge(String srcLabel, String dstLabel){
+        if (graph.containsEdge(srcLabel,dstLabel)){
+            graph.removeEdge(srcLabel, dstLabel);
+            System.out.println("Edge " + srcLabel + " to " + dstLabel + " was removed!");
+        }
+        else{
+            System.out.println("Edge " + srcLabel + " to " + dstLabel + " does not exist!");
+        }
+    }
+
     // personal tests :))
     public static void main(String[] args) {
         DotGraph test = new DotGraph();
         test.parseGraph("localTest.dot");
         test.addEdge("a", "b");
         test.addEdge("c", "a");
+        String[] nodes = {"d","b"};
+        test.removeNodes(nodes);
+        System.out.println(test.toString());
     }
 }

@@ -215,4 +215,73 @@ public class Feature1Test {
         // print graph and compare
         test.generateGraphImage("imageTest.png");
     }
+
+    @Test
+    public void removeNode(){
+        // set up graph
+        String validGraphFile = "test.dot";
+        Graph<String, DefaultEdge> graph = test.parseGraph(validGraphFile);
+        String nodeToRemove = "a";
+
+        // remove node
+        test.removeNode(nodeToRemove);
+
+        // make sure node is not in graph
+        Assert.assertFalse(graph.containsVertex(nodeToRemove));
+    }
+
+    @Test
+    public void removeNonexistentNodes(){
+        // set up graph
+        String validGraphFile = "test.dot";
+        Graph<String, DefaultEdge> graph = test.parseGraph(validGraphFile);
+        int countBefore = graph.vertexSet().size();
+
+        String nodeToRemove = "d";
+
+        // try to remove node
+        test.removeNode(nodeToRemove);
+
+        int countAfter = graph.vertexSet().size();
+
+        // make sure no node was removed
+        Assert.assertEquals(countAfter, countBefore);
+    }
+
+    @Test
+    public void removeMultipleNodes(){
+        String validGraphFile = "test.dot";
+        Graph<String, DefaultEdge> graph = test.parseGraph(validGraphFile);
+        int expectedCount = 1;
+
+        String[] removedNodes = {"a", "b","d", "z"};
+
+        test.removeNodes(removedNodes);
+        int countAfter = graph.vertexSet().size();
+
+        Assert.assertEquals(expectedCount, countAfter);
+    }
+
+    @Test
+    public void removeEdge(){
+        String validGraphFile = "test.dot";
+        Graph<String, DefaultEdge> graph = test.parseGraph(validGraphFile);
+
+        test.removeEdge("a", "b");
+
+        Assert.assertFalse(graph.containsEdge("a", "b"));
+    }
+
+    @Test
+    public void removeNonexistentEdge(){
+        String validGraphFile = "test.dot";
+        Graph<String, DefaultEdge> graph = test.parseGraph(validGraphFile);
+        int countBefore = graph.edgeSet().size();
+
+        test.removeEdge("a", "z");
+
+        int countAfter = graph.edgeSet().size();
+
+        Assert.assertEquals(countBefore, countAfter);
+    }
 }

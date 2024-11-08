@@ -1,0 +1,7 @@
+digraph testGraph{
+    a;
+    b;
+    c;
+    a -> b;
+    b -> c;
+}
