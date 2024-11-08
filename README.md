@@ -55,3 +55,32 @@ Feature 4 Output:
 ![{F1054053-637E-44B5-85C9-69B5EEB1132C}](https://github.com/user-attachments/assets/aefdd0d6-6eeb-4d3c-97fd-a749a740ade9)
 
 **PART TWO**
+
+#1 https://github.com/dbandolaASU/CSE-464-2024-dbandola/commit/d62cbcd7bcfcac36ad9fac5b72892fc28da23285
+Feature 1: removeNode
+Expected output: 
+Parsed graph from localTest.dot
+Node a removed!
+Number of nodes: 2
+Node Labels: [b, c]
+Number of Edges: 1
+Edge Labels: b -> c
+
+Feature2: removeNodes
+Expected output:
+Parsed graph from localTest.dot
+Node a removed!
+Node b removed!
+Number of nodes: 1
+Node Labels: [c]
+Number of Edges: 0
+Edge Labels
+
+Feature3: removeEdge
+expected output:
+Parsed graph from localTest.dot
+Edge b to c was removed!
+Number of nodes: 3
+Node Labels: [a, b, c]
+Number of Edges: 1
+Edge Labels: a -> b
