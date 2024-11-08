@@ -1,6 +1,7 @@
 # CSE-464-2024-dbandola
 Course Project 1 for CSE 464 by Daniel Bandola
 
+**PART ONE**
 
 Feature 1: First Commit
 
@@ -52,3 +53,5 @@ Process finished with exit code 0
 Feature 4 Output: 
 
 ![{F1054053-637E-44B5-85C9-69B5EEB1132C}](https://github.com/user-attachments/assets/aefdd0d6-6eeb-4d3c-97fd-a749a740ade9)
+
+**PART TWO**
