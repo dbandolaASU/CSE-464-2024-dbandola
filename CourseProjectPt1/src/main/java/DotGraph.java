@@ -194,7 +194,29 @@ public class DotGraph {
         }
     }
 
-    public Path GraphSearch(String src, String dst) {
+    public enum Algorithm {
+        BFS, DFS
+    }
+
+    public Path GraphSearch(String src, String dst, Algorithm algo) {
+        // check if src and dst are in graph
+        if (!graph.containsVertex(src) || !graph.containsVertex(dst)) {
+            System.out.println("src or dst node not found in the graph.");
+            return null;
+        }
+
+        // choose algo based on enum
+        switch (algo) {
+            case BFS:
+                return bfsAlgo(src, dst);
+            case DFS:
+                return dfsAlgo(src, dst);
+            default:
+                throw new IllegalArgumentException("Unsupported search algorithm: " + algo);
+        }
+    }
+
+    public Path dfsAlgo(String src, String dst) {
 
         // check if nodes are in the graph
         if (!graph.containsVertex(src) || !graph.containsVertex(dst)) {
@@ -203,28 +225,28 @@ public class DotGraph {
         }
 
         // structures needed for bfs
-        Deque<String> stack = new LinkedList<>();
+        Queue<String> queue = new LinkedList<>();
         Set<String> visited = new HashSet<>();
         Map<String, String> parentMap = new HashMap<>();
 
-        stack.push(src);
+        queue.add(src);
         visited.add(src);
 
         // BFS
-        while (!stack.isEmpty()) {
-            String currentNode = stack.pop();
+        while (!queue.isEmpty()) {
+            String currentNode = queue.poll();
 
-            // if dest is reached, build and return the path
+            // If we reach the destination node, build and return the path
             if (currentNode.equals(dst)) {
                 return buildPath(parentMap, src, dst);
             }
 
-            // add neighboring nodes to stack
+            // Add neighboring nodes to the queue
             for (DefaultEdge edge : graph.outgoingEdgesOf(currentNode)) {
                 String neighbor = graph.getEdgeTarget(edge);
 
                 if (!visited.contains(neighbor)) {
-                    stack.push(neighbor);
+                    queue.add(neighbor);
                     visited.add(neighbor);
                     parentMap.put(neighbor, currentNode);
                 }
@@ -234,6 +256,42 @@ public class DotGraph {
         System.out.println("No path found between " + src + " and " + dst);
         return null;
     }
+
+    public Path bfsAlgo(String src, String dst) {
+
+        // structures needed for bfs
+        Queue<String> queue = new LinkedList<>();
+        Set<String> visited = new HashSet<>();
+        Map<String, String> parentMap = new HashMap<>();
+
+        queue.add(src);
+        visited.add(src);
+
+        // BFS
+        while (!queue.isEmpty()) {
+            String currentNode = queue.poll();
+
+            // If we reach the destination node, build and return the path
+            if (currentNode.equals(dst)) {
+                return buildPath(parentMap, src, dst);
+            }
+
+            // Add neighboring nodes to the queue
+            for (DefaultEdge edge : graph.outgoingEdgesOf(currentNode)) {
+                String neighbor = graph.getEdgeTarget(edge);
+
+                if (!visited.contains(neighbor)) {
+                    queue.add(neighbor);
+                    visited.add(neighbor);
+                    parentMap.put(neighbor, currentNode);
+                }
+            }
+        }
+
+        System.out.println("No path found between " + src + " and " + dst);
+        return null;
+    }
+
 
     private Path buildPath(Map<String, String> parentMap, String source, String destination) {
         Path path = new Path();
@@ -257,7 +315,7 @@ public class DotGraph {
         graph.parseGraph("localTest.dot");
         System.out.println(graph.toString());
 
-        Path path = graph.GraphSearch("b", "c");
+        Path path = graph.GraphSearch("b", "c", Algorithm.DFS);
         if (path != null) {
             System.out.println("Path found: " + path);
         } else {
