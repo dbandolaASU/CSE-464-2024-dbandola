@@ -1,4 +1,4 @@
-import org.jgrapht.*;
+import guru.nidi.graphviz.model.Node;
 import org.jgrapht.Graph;
 import org.jgrapht.nio.dot.*;
 import org.jgrapht.graph.DefaultDirectedGraph;
@@ -10,9 +10,28 @@ import guru.nidi.graphviz.model.MutableGraph;
 import guru.nidi.graphviz.engine.Format;
 
 import java.io.*;
+import java.util.*;
 
 // Daniel Bandola 1221595050
 // CSE464 Course Project Pt. 1
+
+class Path {
+    private List<String> nodes;
+
+    public Path() {
+        this.nodes = new ArrayList<>();
+    }
+    public void addNode(String node) {
+        nodes.add(node);
+    }
+    public List<String> getNodes() {
+        return nodes;
+    }
+    @Override
+    public String toString() {
+        return String.join(" -> ", nodes);
+    }
+}
 
 public class DotGraph {
 
@@ -175,14 +194,76 @@ public class DotGraph {
         }
     }
 
+    public Path GraphSearch(String src, String dst) {
+
+        // check if nodes are in the graph
+        if (!graph.containsVertex(src) || !graph.containsVertex(dst)) {
+            System.out.println("src or dst node not found in the graph.");
+            return null;
+        }
+
+        // structures needed for bfs
+        Queue<String> queue = new LinkedList<>();
+        Set<String> visited = new HashSet<>();
+        Map<String, String> parentMap = new HashMap<>();
+
+        queue.add(src);
+        visited.add(src);
+
+        // BFS
+        while (!queue.isEmpty()) {
+            String currentNode = queue.poll();
+
+            // If we reach the destination node, build and return the path
+            if (currentNode.equals(dst)) {
+                return buildPath(parentMap, src, dst);
+            }
+
+            // Add neighboring nodes to the queue
+            for (DefaultEdge edge : graph.outgoingEdgesOf(currentNode)) {
+                String neighbor = graph.getEdgeTarget(edge);
+
+                if (!visited.contains(neighbor)) {
+                    queue.add(neighbor);
+                    visited.add(neighbor);
+                    parentMap.put(neighbor, currentNode);
+                }
+            }
+        }
+
+        System.out.println("No path found between " + src + " and " + dst);
+        return null;
+    }
+
+    private Path buildPath(Map<String, String> parentMap, String source, String destination) {
+        Path path = new Path();
+
+        // backwards from destination to source using parentMap
+        for (String at = destination; at != null; at = parentMap.get(at)) {
+            path.addNode(at);
+        }
+        Collections.reverse(path.getNodes());
+
+        // check that we reached the source node
+        if (path.getNodes().get(0).equals(source)) {
+            return path;
+        }
+        return null;
+    }
+
     // personal tests :))
     public static void main(String[] args) {
-        DotGraph test = new DotGraph();
-        test.parseGraph("localTest.dot");
-        test.addEdge("a", "b");
-        test.addEdge("c", "a");
-        String[] nodes = {"d","b"};
-        test.removeNodes(nodes);
-        System.out.println(test.toString());
+        DotGraph graph = new DotGraph();
+        graph.parseGraph("localTest.dot");
+        System.out.println(graph.toString());
+
+        Path path = graph.GraphSearch("b", "c");
+        if (path != null) {
+            System.out.println("Path found: " + path);
+        } else {
+            System.out.println("No path exists between the specified nodes.");
+        }
+
+
     }
 }
