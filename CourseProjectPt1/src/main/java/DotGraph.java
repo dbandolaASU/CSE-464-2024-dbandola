@@ -1,6 +1,4 @@
-import guru.nidi.graphviz.model.Node;
 import org.jgrapht.Graph;
-import org.jgrapht.graph.AbstractGraph;
 import org.jgrapht.nio.dot.*;
 import org.jgrapht.graph.DefaultDirectedGraph;
 import org.jgrapht.graph.DefaultEdge;
@@ -14,7 +12,7 @@ import java.io.*;
 import java.util.*;
 
 // Daniel Bandola 1221595050
-// CSE464 Course Project Pt. 1
+// CSE464 Course Project Pt. 3
 
 class Path {
     private List<String> nodes;
@@ -34,13 +32,17 @@ class Path {
     }
 }
 
+interface SearchStrategy {
+    Path search(String src, String dst);
+}
+
 // PART THREE #2
-abstract class AbstractGraphSearch {
+abstract class XXXTemplate {
     protected Graph<String, DefaultEdge> graph;
     protected  Set<String> visited;
     protected Map<String, String> parentMap;
 
-    public AbstractGraphSearch(Graph<String, DefaultEdge> graph){
+    public XXXTemplate(Graph<String, DefaultEdge> graph){
         this.graph = graph;
         this.visited = new HashSet<>();
         this.parentMap = new HashMap<>();
@@ -102,7 +104,7 @@ abstract class AbstractGraphSearch {
     }
 }
 
-class BFSGraphSearch extends AbstractGraphSearch {
+class BFSGraphSearch extends XXXTemplate implements SearchStrategy {
     private Queue<String> frontier;
 
     public BFSGraphSearch(Graph<String, DefaultEdge> graph) {
@@ -132,7 +134,7 @@ class BFSGraphSearch extends AbstractGraphSearch {
     }
 }
 
-class DFSGraphSearch extends AbstractGraphSearch {
+class DFSGraphSearch extends XXXTemplate implements SearchStrategy{
     private Deque<String> frontier;
 
     public DFSGraphSearch(Graph<String, DefaultEdge> graph) {
@@ -310,37 +312,35 @@ public class DotGraph {
     }
 
     public Path GraphSearch(String src, String dst, Algorithm algo) {
-        AbstractGraphSearch search;
+        SearchStrategy strategy;
 
         // choose algo based on enum
         switch (algo) {
             case BFS:
-                search = new BFSGraphSearch(graph);
+                strategy = new BFSGraphSearch(graph);
                 break;
             case DFS:
-                search = new DFSGraphSearch(graph);
+                strategy = new DFSGraphSearch(graph);
                 break;
             default:
                 throw new IllegalArgumentException("Unsupported algorithm: " + algo);
         }
-        return search.search(src, dst);
+        return strategy.search(src, dst);
     }
 
     // personal tests :))
     public static void main(String[] args) {
         DotGraph graph = new DotGraph();
-        graph.parseGraph("localTest.dot");
+        graph.parseGraph("input.dot");
         System.out.println(graph.toString());
         graph.addNodes("z");
         graph.removeNodes("z");
 
-        Path path = graph.GraphSearch("b", "c", Algorithm.DFS);
+        Path path = graph.GraphSearch("a", "h", Algorithm.BFS);
         if (path != null) {
             System.out.println("Path found: " + path);
         } else {
             System.out.println("No path exists between the specified nodes.");
         }
-
-
     }
 }
