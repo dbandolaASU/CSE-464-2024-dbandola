@@ -1,7 +1,7 @@
 # CSE-464-2024-dbandola
-Course Project 1 for CSE 464 by Daniel Bandola
+Course Project 1 for CSE 464 by Daniel Bandola 
 
-**PART ONE**
+**PART THREE**
 
 Feature 1: First Commit
 
