@@ -29,4 +29,8 @@ I created and interface "SearchStrategy" which declared the method search. I the
 
 #4
 
+Random Walk commit link: https://github.com/dbandolaASU/CSE-464-2024-dbandola/commit/c71b181c1d73f7b57e4370f2a7338a1124ea95e9
+
+chooses a random node to go to from the src. it can not visit the same not again since it was leading to memory errors. Below is the traversal from a to c.
+
 ![{721D45A7-6BF8-419A-AE8D-2EE82E58E3A2}](https://github.com/user-attachments/assets/65bd476f-3149-4408-8f70-49614f23e39d)
