@@ -23,6 +23,6 @@ I used the template pattern to extract the common steps of BFS and DFS. These we
 
 #3
 
-Strategy Design Pattern commit link: https://github.com/dbandolaASU/CSE-464-2024-dbandola/commit/1cb7694920c2b40c51536632c391aa46c7c8dd8f
+Strategy Design Pattern commit link: https://github.com/dbandolaASU/CSE-464-2024-dbandola/commit/c714e104787a6e297561a34b9105145d71b2b7f0
 
 I created and interface "SearchStrategy" which declared the method search. I then changed my BFS and DFS methods to implement SearchStrategy. Then in GraphSearch, I made it so that a SearchStrategy is declared and set to either BFS or DFS.
