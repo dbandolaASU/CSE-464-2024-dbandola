@@ -1,86 +1,36 @@
 # CSE-464-2024-dbandola
-Course Project 1 for CSE 464 by Daniel Bandola
+Course Project Part 3 for CSE 464 by Daniel Bandola 
 
-**PART ONE**
+**PART THREE**
 
-Feature 1: First Commit
+#1
 
-Part of Feature 2 and 3 (forgot to add list of nodes): https://github.com/dbandolaASU/CSE-464-2024-dbandola/pull/1
+Refactor commit link: https://github.com/dbandolaASU/CSE-464-2024-dbandola/commit/620a403e9e5c996c497922e2129690f16b7dab94 
 
-Feature 2 List of Nodes: https://github.com/dbandolaASU/CSE-464-2024-dbandola/pull/2
-
-Feature 4: https://github.com/dbandolaASU/CSE-464-2024-dbandola/pull/3
-Make sure that the output image on the JUnit test looks like the image below
-![{F1054053-637E-44B5-85C9-69B5EEB1132C}](https://github.com/user-attachments/assets/aefdd0d6-6eeb-4d3c-97fd-a749a740ade9)
-
-FINAL CLEANUP COMMIT: https://github.com/dbandolaASU/CSE-464-2024-dbandola/pull/4
-
-To compile: mvn package
-
-To test: mvn test
-
-Feature 1 Output:
-
-Parsed graph from localTest.dot
-Number of nodes: 3
-Node Labels: [a, b, c]
-Number of Edges: 2
-Edge Labels: a -> b, b -> c
-Graph output to file testOutput.dot!
+Refactor 1 Method Extraction: extracted the method of checking if a node exists to simplify the code
+Refactor 2 Method Extraction: extracted the method of checking if an edge exists to simplify the code
+Refactor 3 Combine Methods: since adding one or multiple nodes was similar in function, I combined them into a single method for simplicity
+Refactor 4 Combine Methods: since remvoing one or multiple nodes was similar in function, I combined them into a single method for simplicity
+Refactor 5 Code Simplification: Simplified the code for toString, it takes up less lines and looks less messy
 
 
-Feature 2 Output:
+#2
 
-Process finished with exit code 0
-Parsed graph from localTest.dot
-Duplicate Node: a
-Node z added!
-Node a already exists!
-Node r added!
+Template Design commit link: https://github.com/dbandolaASU/CSE-464-2024-dbandola/commit/0d315f8547cc53a39d1531a71f92bb88af678c9d
 
-Process finished with exit code 0
+I used the template pattern to extract the common steps of BFS and DFS. These were processing neighbors, building the path, checking if the nodes were valid, and the graph traversal. Since BFS used a queue and DFS uses a stack, any code with functions specific to queues and stacks were overridden in the bfs and dfs methods respectively.
 
 
-Feature 3 Output: 
+#3
 
-Parsed graph from localTest.dot
-Duplicate Vertex: a -> b
-Edge c to a added!
+Strategy Design Pattern commit link: https://github.com/dbandolaASU/CSE-464-2024-dbandola/commit/c714e104787a6e297561a34b9105145d71b2b7f0
 
-Process finished with exit code 0
+I created and interface "SearchStrategy" which declared the method search. I then changed my BFS and DFS methods to implement SearchStrategy. Then in GraphSearch, I made it so that a SearchStrategy is declared and set to either BFS or DFS.
 
+#4
 
-Feature 4 Output: 
+Random Walk commit link: https://github.com/dbandolaASU/CSE-464-2024-dbandola/commit/c71b181c1d73f7b57e4370f2a7338a1124ea95e9
 
-![{F1054053-637E-44B5-85C9-69B5EEB1132C}](https://github.com/user-attachments/assets/aefdd0d6-6eeb-4d3c-97fd-a749a740ade9)
+chooses a random node to go to from the src. it can not visit the same not again since it was leading to memory errors. Below is the traversal from a to c.
 
-**PART TWO**
-
-#1 https://github.com/dbandolaASU/CSE-464-2024-dbandola/commit/d62cbcd7bcfcac36ad9fac5b72892fc28da23285
-Feature 1: removeNode
-Expected output: 
-Parsed graph from localTest.dot
-Node a removed!
-Number of nodes: 2
-Node Labels: [b, c]
-Number of Edges: 1
-Edge Labels: b -> c
-
-Feature2: removeNodes
-Expected output:
-Parsed graph from localTest.dot
-Node a removed!
-Node b removed!
-Number of nodes: 1
-Node Labels: [c]
-Number of Edges: 0
-Edge Labels
-
-Feature3: removeEdge
-expected output:
-Parsed graph from localTest.dot
-Edge b to c was removed!
-Number of nodes: 3
-Node Labels: [a, b, c]
-Number of Edges: 1
-Edge Labels: a -> b
+![{721D45A7-6BF8-419A-AE8D-2EE82E58E3A2}](https://github.com/user-attachments/assets/65bd476f-3149-4408-8f70-49614f23e39d)

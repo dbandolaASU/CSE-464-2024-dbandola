@@ -127,7 +127,7 @@ public class Feature1Test {
         String newNode = "d";
 
         // add new node
-        test.addNode("d");
+        test.addNodes("d");
 
         // make sure new node is in graph
         Assert.assertTrue(graph.containsVertex(newNode));
@@ -162,7 +162,7 @@ public class Feature1Test {
         int countBeforeAdd = graph.vertexSet().size();
 
         // add duplicate node
-        test.addNode("a");
+        test.addNodes("a");
 
         // node count after add
         int countAfterAdd = graph.vertexSet().size();
@@ -224,7 +224,7 @@ public class Feature1Test {
         String nodeToRemove = "a";
 
         // remove node
-        test.removeNode(nodeToRemove);
+        test.removeNodes(nodeToRemove);
 
         // make sure node is not in graph
         Assert.assertFalse(graph.containsVertex(nodeToRemove));
@@ -240,7 +240,7 @@ public class Feature1Test {
         String nodeToRemove = "d";
 
         // try to remove node
-        test.removeNode(nodeToRemove);
+        test.removeNodes(nodeToRemove);
 
         int countAfter = graph.vertexSet().size();
 

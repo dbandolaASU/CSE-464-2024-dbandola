@@ -1,4 +1,3 @@
-import guru.nidi.graphviz.model.Node;
 import org.jgrapht.Graph;
 import org.jgrapht.nio.dot.*;
 import org.jgrapht.graph.DefaultDirectedGraph;
@@ -13,7 +12,7 @@ import java.io.*;
 import java.util.*;
 
 // Daniel Bandola 1221595050
-// CSE464 Course Project Pt. 1
+// CSE464 Course Project Pt. 3
 
 class Path {
     private List<String> nodes;
@@ -33,9 +32,222 @@ class Path {
     }
 }
 
+// PART THREE #3
+interface SearchStrategy {
+    Path search(String src, String dst);
+}
+
+// PART THREE #2
+abstract class XXXTemplate {
+    protected Graph<String, DefaultEdge> graph;
+    protected  Set<String> visited;
+    protected Map<String, String> parentMap;
+
+    public XXXTemplate(Graph<String, DefaultEdge> graph){
+        this.graph = graph;
+        this.visited = new HashSet<>();
+        this.parentMap = new HashMap<>();
+    }
+
+    // template for search
+    public final Path search(String src, String dst) {
+        // check if node exists
+        if (!graph.containsVertex(src) || !graph.containsVertex(dst)) {
+            System.out.println("Source or destination node not found in the graph.");
+            return null;
+        }
+
+        initializeFrontier(src);
+
+        // graph traversal
+        while (!isFrontierEmpty()) {
+            String currentNode = getNextNode();
+
+            // dst reached
+            if (currentNode.equals(dst)) {
+                return buildPath(src, dst);
+            }
+
+            processNeighbors(currentNode);
+        }
+
+        // dst is not reached
+        System.out.println("No path found between " + src + " and " + dst);
+        return null;
+    }
+
+    // abstract methods
+    protected abstract void initializeFrontier(String src);
+    protected abstract boolean isFrontierEmpty();
+    protected abstract String getNextNode();
+    protected abstract void addToFrontier(String node);
+    protected abstract void processNeighbors(String currentNode);
+
+    // build the shortest path
+    private Path buildPath(String src, String dst) {
+        Path path = new Path();
+        for (String at = dst; at != null; at = parentMap.get(at)) {
+            path.addNode(at);
+        }
+        Collections.reverse(path.getNodes());
+        return path;
+    }
+}
+
+class BFSGraphSearch extends XXXTemplate implements SearchStrategy {
+    private Queue<String> frontier;
+
+    public BFSGraphSearch(Graph<String, DefaultEdge> graph) {
+        super(graph);
+        this.frontier = new LinkedList<>();
+    }
+
+    @Override
+    protected void initializeFrontier(String src) {
+        frontier.add(src);
+        visited.add(src);
+    }
+
+    @Override
+    protected boolean isFrontierEmpty() {
+        return frontier.isEmpty();
+    }
+
+    @Override
+    protected String getNextNode() {
+        return frontier.poll();
+    }
+
+    @Override
+    protected void addToFrontier(String node) {
+        frontier.add(node);
+    }
+
+    @Override
+    protected void processNeighbors(String currentNode) {
+        for (DefaultEdge edge : graph.outgoingEdgesOf(currentNode)) {
+            String neighbor = graph.getEdgeTarget(edge);
+            if (!visited.contains(neighbor)) {
+                addToFrontier(neighbor);
+                visited.add(neighbor);
+                parentMap.put(neighbor, currentNode);
+            }
+        }
+    }
+
+}
+
+class DFSGraphSearch extends XXXTemplate implements SearchStrategy{
+    private Deque<String> frontier;
+
+    public DFSGraphSearch(Graph<String, DefaultEdge> graph) {
+        super(graph);
+        this.frontier = new ArrayDeque<>();
+    }
+
+    @Override
+    protected void initializeFrontier(String src) {
+        frontier.push(src);
+        visited.add(src);
+    }
+
+    @Override
+    protected boolean isFrontierEmpty() {
+        return frontier.isEmpty();
+    }
+
+    @Override
+    protected String getNextNode() {
+        return frontier.pop();
+    }
+
+    @Override
+    protected void addToFrontier(String node) {
+        frontier.push(node);
+    }
+
+    @Override
+    protected void processNeighbors(String currentNode) {
+        for (DefaultEdge edge : graph.outgoingEdgesOf(currentNode)) {
+            String neighbor = graph.getEdgeTarget(edge);
+            if (!visited.contains(neighbor)) {
+                addToFrontier(neighbor);
+                visited.add(neighbor);
+                parentMap.put(neighbor, currentNode);
+            }
+        }
+    }
+}
+
+class RNDGraphSearch extends XXXTemplate implements SearchStrategy{
+    private Random random;
+    private Deque<String> frontier;
+
+    public RNDGraphSearch(Graph<String, DefaultEdge> graph) {
+        super(graph);
+        this.random = new Random();
+        this.frontier = new ArrayDeque<>();
+    }
+
+    @Override
+    protected void initializeFrontier(String src) {
+        // put src in frontier
+        frontier.push(src);
+        visited.add(src);
+    }
+
+    @Override
+    protected boolean isFrontierEmpty() {
+        return frontier.isEmpty();
+    }
+
+    @Override
+    protected String getNextNode() {
+        // random node from frontier
+        return frontier.pop();
+    }
+
+    @Override
+    protected void addToFrontier(String node) {
+        // add node back to frontier
+        frontier.push(node);
+    }
+
+    @Override
+    protected void processNeighbors(String currentNode) {
+        List<DefaultEdge> edges = new ArrayList<>(graph.outgoingEdgesOf(currentNode));
+
+        if (!edges.isEmpty()) {
+            // pick random neighbor
+            DefaultEdge randomEdge = edges.get(random.nextInt(edges.size()));
+            String nextNode = graph.getEdgeTarget(randomEdge);
+
+            // print path
+            System.out.println("Visiting Path{nodes=" + visited + "}");
+
+            // Add the randomly selected neighbor to the frontier if it has not been visited
+            if (!visited.contains(nextNode)) {
+                addToFrontier(nextNode);
+                visited.add(nextNode);
+                parentMap.put(nextNode, currentNode);
+            }
+        }
+    }
+}
+
 public class DotGraph {
 
     private Graph<String, DefaultEdge> graph;
+
+    // REFACTOR 1: Extract Method
+    public boolean nodeExists(String node){
+        return graph.containsVertex(node);
+    }
+
+    // REFACTOR 2: Extract Method
+    public boolean edgeExists(String src, String dst){
+        return graph.containsEdge(src, dst);
+    }
 
     // Feature 1:
     public Graph<String, DefaultEdge> parseGraph(String filepath) {
@@ -59,23 +271,19 @@ public class DotGraph {
         return graph;
     }
 
+    // REFACTOR 5: Code Simplification
     @Override
-    public String toString(){
-        StringBuilder graphString = new StringBuilder();
-        // add number of nodes to string
-        graphString.append("Number of nodes: ").append(graph.vertexSet().size()).append("\n");
-        // add nodes to string
-        graphString.append("Node Labels: ").append(graph.vertexSet()).append("\n");
-        // add number of edges to string
-        graphString.append("Number of Edges: ").append(graph.edgeSet().size()).append("\n");
-        // add all the edges to the string
-        graphString.append("Edge Labels: ");
-        for (DefaultEdge edge : graph.edgeSet()) {
-            graphString.append(graph.getEdgeSource(edge)).append(" -> ").append(graph.getEdgeTarget(edge)).append(", ");
-        }
-        // remove final ,
-        graphString.setLength(graphString.length() - 2);
-        return graphString.toString();
+    public String toString() {
+        StringJoiner edges = new StringJoiner(", ");
+        graph.edgeSet().forEach(edge -> edges.add(graph.getEdgeSource(edge) + " -> " + graph.getEdgeTarget(edge)));
+
+        return String.format(
+                "Number of nodes: %d\nNode Labels: %s\nNumber of Edges: %d\nEdge Labels: %s",
+                graph.vertexSet().size(),
+                graph.vertexSet(),
+                graph.edgeSet().size(),
+                edges
+        );
     }
 
     public void outputGraph(String filepath){
@@ -98,24 +306,12 @@ public class DotGraph {
 
     // Feature 2
 
-    public void addNode(String node) {
-        // check if node exists
-        if (graph.containsVertex(node)){
-            System.out.println("Duplicate Node: " + node);
-        }
-        // add node
-        else {
-            graph.addVertex(node);
-            System.out.println("Node " + node + " added!");
-        }
-    }
-
-    public void addNodes (String[] nodes){
-        for (String node: nodes){
-            if (graph.containsVertex(node)){
+    // REFACTOR 3: Combine Methods
+    public void addNodes(String... nodes) {
+        for (String node : nodes) {
+            if (nodeExists(node)) {
                 System.out.println("Node " + node + " already exists!");
-            }
-            else{
+            } else {
                 graph.addVertex(node);
                 System.out.println("Node " + node + " added!");
             }
@@ -126,7 +322,7 @@ public class DotGraph {
 
     public void addEdge(String src, String des){
         // check if edge exists
-        if (graph.containsEdge(src, des)){
+        if (edgeExists(src, des)){
             System.out.println("Duplicate Vertex: " + src + " -> " + des);
         }
         // add edge
@@ -160,32 +356,20 @@ public class DotGraph {
 
     // Project Part 2 #1
 
-    public void removeNode(String label){
-        // check if node doesnt exist
-        if (!graph.containsVertex(label)){
-            System.out.println("Node Does Not Exist: " + label);
-        }
-        // remove node
-        else {
-            graph.removeVertex(label);
-            System.out.println("Node " + label + " removed!");
-        }
-    }
-
-    public void removeNodes(String[] labels){
-        for (String label: labels){
-            if (!graph.containsVertex(label)){
-                System.out.println("Node Does Not Exist: " + label);
-            }
-            else{
-                graph.removeVertex(label);
-                System.out.println("Node " + label + " removed!");
+    // REFACTOR 4: Combine Methods
+    public void removeNodes(String... nodes){
+        for (String node : nodes) {
+            if (!nodeExists(node)){
+                System.out.println("Node" + node + " does not exist!");
+            } else {
+                graph.removeVertex(node);
+                System.out.println("Node " + node + " removed!");
             }
         }
     }
 
     public void removeEdge(String srcLabel, String dstLabel){
-        if (graph.containsEdge(srcLabel,dstLabel)){
+        if (edgeExists(srcLabel,dstLabel)){
             graph.removeEdge(srcLabel, dstLabel);
             System.out.println("Edge " + srcLabel + " to " + dstLabel + " was removed!");
         }
@@ -195,133 +379,44 @@ public class DotGraph {
     }
 
     public enum Algorithm {
-        BFS, DFS
+        BFS, DFS, RND
     }
 
     public Path GraphSearch(String src, String dst, Algorithm algo) {
-        // check if src and dst are in graph
-        if (!graph.containsVertex(src) || !graph.containsVertex(dst)) {
-            System.out.println("src or dst node not found in the graph.");
-            return null;
-        }
+        SearchStrategy strategy;
 
         // choose algo based on enum
         switch (algo) {
             case BFS:
-                return bfsAlgo(src, dst);
+                strategy = new BFSGraphSearch(graph);
+                break;
             case DFS:
-                return dfsAlgo(src, dst);
+                strategy = new DFSGraphSearch(graph);
+                break;
+            case RND:
+                strategy = new RNDGraphSearch(graph);
+                break;
             default:
-                throw new IllegalArgumentException("Unsupported search algorithm: " + algo);
+                throw new IllegalArgumentException("Unsupported algorithm: " + algo);
         }
-    }
-
-    public Path dfsAlgo(String src, String dst) {
-
-        // check if nodes are in the graph
-        if (!graph.containsVertex(src) || !graph.containsVertex(dst)) {
-            System.out.println("src or dst node not found in the graph.");
-            return null;
-        }
-
-        // structures needed for bfs
-        Queue<String> queue = new LinkedList<>();
-        Set<String> visited = new HashSet<>();
-        Map<String, String> parentMap = new HashMap<>();
-
-        queue.add(src);
-        visited.add(src);
-
-        // BFS
-        while (!queue.isEmpty()) {
-            String currentNode = queue.poll();
-
-            // If we reach the destination node, build and return the path
-            if (currentNode.equals(dst)) {
-                return buildPath(parentMap, src, dst);
-            }
-
-            // Add neighboring nodes to the queue
-            for (DefaultEdge edge : graph.outgoingEdgesOf(currentNode)) {
-                String neighbor = graph.getEdgeTarget(edge);
-
-                if (!visited.contains(neighbor)) {
-                    queue.add(neighbor);
-                    visited.add(neighbor);
-                    parentMap.put(neighbor, currentNode);
-                }
-            }
-        }
-
-        System.out.println("No path found between " + src + " and " + dst);
-        return null;
-    }
-
-    public Path bfsAlgo(String src, String dst) {
-
-        // structures needed for bfs
-        Queue<String> queue = new LinkedList<>();
-        Set<String> visited = new HashSet<>();
-        Map<String, String> parentMap = new HashMap<>();
-
-        queue.add(src);
-        visited.add(src);
-
-        // BFS
-        while (!queue.isEmpty()) {
-            String currentNode = queue.poll();
-
-            // If we reach the destination node, build and return the path
-            if (currentNode.equals(dst)) {
-                return buildPath(parentMap, src, dst);
-            }
-
-            // Add neighboring nodes to the queue
-            for (DefaultEdge edge : graph.outgoingEdgesOf(currentNode)) {
-                String neighbor = graph.getEdgeTarget(edge);
-
-                if (!visited.contains(neighbor)) {
-                    queue.add(neighbor);
-                    visited.add(neighbor);
-                    parentMap.put(neighbor, currentNode);
-                }
-            }
-        }
-
-        System.out.println("No path found between " + src + " and " + dst);
-        return null;
-    }
-
-
-    private Path buildPath(Map<String, String> parentMap, String source, String destination) {
-        Path path = new Path();
-
-        // backwards from destination to source using parentMap
-        for (String at = destination; at != null; at = parentMap.get(at)) {
-            path.addNode(at);
-        }
-        Collections.reverse(path.getNodes());
-
-        // check that we reached the source node
-        if (path.getNodes().get(0).equals(source)) {
-            return path;
-        }
-        return null;
+        return strategy.search(src, dst);
     }
 
     // personal tests :))
     public static void main(String[] args) {
         DotGraph graph = new DotGraph();
-        graph.parseGraph("localTest.dot");
-        System.out.println(graph.toString());
+        graph.parseGraph("input.dot");
 
-        Path path = graph.GraphSearch("b", "c", Algorithm.DFS);
-        if (path != null) {
-            System.out.println("Path found: " + path);
-        } else {
-            System.out.println("No path exists between the specified nodes.");
+        // test rnd walk
+        for (int i = 0; i < 5; i++) {
+            System.out.println("Random Walk Test " + (i + 1));
+            Path path = graph.GraphSearch("a", "h", Algorithm.RND);
+            if (path != null) {
+                System.out.println("Path found: " + path);
+            } else {
+                System.out.println("No path exists between the specified nodes.");
+            }
+            System.out.println();
         }
-
-
     }
 }
