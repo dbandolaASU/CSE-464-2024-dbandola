@@ -37,6 +37,16 @@ public class DotGraph {
 
     private Graph<String, DefaultEdge> graph;
 
+    // REFACTOR 1: Extract Method
+    public boolean nodeExists(String node){
+        return graph.containsVertex(node);
+    }
+
+    // REFACTOR 2: Extract Method
+    public boolean edgeExists(String src, String dst){
+        return graph.containsEdge(src, dst);
+    }
+
     // Feature 1:
     public Graph<String, DefaultEdge> parseGraph(String filepath) {
         // create dot importer and a new empty graph
@@ -59,23 +69,19 @@ public class DotGraph {
         return graph;
     }
 
+    // REFACTOR 5: Code Simplification
     @Override
-    public String toString(){
-        StringBuilder graphString = new StringBuilder();
-        // add number of nodes to string
-        graphString.append("Number of nodes: ").append(graph.vertexSet().size()).append("\n");
-        // add nodes to string
-        graphString.append("Node Labels: ").append(graph.vertexSet()).append("\n");
-        // add number of edges to string
-        graphString.append("Number of Edges: ").append(graph.edgeSet().size()).append("\n");
-        // add all the edges to the string
-        graphString.append("Edge Labels: ");
-        for (DefaultEdge edge : graph.edgeSet()) {
-            graphString.append(graph.getEdgeSource(edge)).append(" -> ").append(graph.getEdgeTarget(edge)).append(", ");
-        }
-        // remove final ,
-        graphString.setLength(graphString.length() - 2);
-        return graphString.toString();
+    public String toString() {
+        StringJoiner edges = new StringJoiner(", ");
+        graph.edgeSet().forEach(edge -> edges.add(graph.getEdgeSource(edge) + " -> " + graph.getEdgeTarget(edge)));
+
+        return String.format(
+                "Number of nodes: %d\nNode Labels: %s\nNumber of Edges: %d\nEdge Labels: %s",
+                graph.vertexSet().size(),
+                graph.vertexSet(),
+                graph.edgeSet().size(),
+                edges
+        );
     }
 
     public void outputGraph(String filepath){
@@ -98,24 +104,12 @@ public class DotGraph {
 
     // Feature 2
 
-    public void addNode(String node) {
-        // check if node exists
-        if (graph.containsVertex(node)){
-            System.out.println("Duplicate Node: " + node);
-        }
-        // add node
-        else {
-            graph.addVertex(node);
-            System.out.println("Node " + node + " added!");
-        }
-    }
-
-    public void addNodes (String[] nodes){
-        for (String node: nodes){
-            if (graph.containsVertex(node)){
+    // REFACTOR 3: Combine Methods
+    public void addNodes(String... nodes) {
+        for (String node : nodes) {
+            if (nodeExists(node)) {
                 System.out.println("Node " + node + " already exists!");
-            }
-            else{
+            } else {
                 graph.addVertex(node);
                 System.out.println("Node " + node + " added!");
             }
@@ -126,7 +120,7 @@ public class DotGraph {
 
     public void addEdge(String src, String des){
         // check if edge exists
-        if (graph.containsEdge(src, des)){
+        if (edgeExists(src, des)){
             System.out.println("Duplicate Vertex: " + src + " -> " + des);
         }
         // add edge
@@ -160,32 +154,20 @@ public class DotGraph {
 
     // Project Part 2 #1
 
-    public void removeNode(String label){
-        // check if node doesnt exist
-        if (!graph.containsVertex(label)){
-            System.out.println("Node Does Not Exist: " + label);
-        }
-        // remove node
-        else {
-            graph.removeVertex(label);
-            System.out.println("Node " + label + " removed!");
-        }
-    }
-
-    public void removeNodes(String[] labels){
-        for (String label: labels){
-            if (!graph.containsVertex(label)){
-                System.out.println("Node Does Not Exist: " + label);
-            }
-            else{
-                graph.removeVertex(label);
-                System.out.println("Node " + label + " removed!");
+    // REFACTOR 4: Combine Methods
+    public void removeNodes(String... nodes){
+        for (String node : nodes) {
+            if (!nodeExists(node)){
+                System.out.println("Node" + node + " does not exist!");
+            } else {
+                graph.removeVertex(node);
+                System.out.println("Node " + node + " removed!");
             }
         }
     }
 
     public void removeEdge(String srcLabel, String dstLabel){
-        if (graph.containsEdge(srcLabel,dstLabel)){
+        if (edgeExists(srcLabel,dstLabel)){
             graph.removeEdge(srcLabel, dstLabel);
             System.out.println("Edge " + srcLabel + " to " + dstLabel + " was removed!");
         }
@@ -199,8 +181,8 @@ public class DotGraph {
     }
 
     public Path GraphSearch(String src, String dst, Algorithm algo) {
-        // check if src and dst are in graph
-        if (!graph.containsVertex(src) || !graph.containsVertex(dst)) {
+        // check if nodes are in the graph
+        if (!nodeExists(src) || !nodeExists(dst)) {
             System.out.println("src or dst node not found in the graph.");
             return null;
         }
@@ -218,41 +200,29 @@ public class DotGraph {
 
     public Path dfsAlgo(String src, String dst) {
 
-        // check if nodes are in the graph
-        if (!graph.containsVertex(src) || !graph.containsVertex(dst)) {
-            System.out.println("src or dst node not found in the graph.");
-            return null;
-        }
-
         // structures needed for bfs
-        Queue<String> queue = new LinkedList<>();
+        Deque<String> stack = new LinkedList<>();
         Set<String> visited = new HashSet<>();
         Map<String, String> parentMap = new HashMap<>();
-
-        queue.add(src);
+        stack.push(src);
         visited.add(src);
-
         // BFS
-        while (!queue.isEmpty()) {
-            String currentNode = queue.poll();
-
-            // If we reach the destination node, build and return the path
+        while (!stack.isEmpty()) {
+            String currentNode = stack.pop();
+            // if dest is reached, build and return the path
             if (currentNode.equals(dst)) {
                 return buildPath(parentMap, src, dst);
             }
-
-            // Add neighboring nodes to the queue
+            // add neighboring nodes to stack
             for (DefaultEdge edge : graph.outgoingEdgesOf(currentNode)) {
                 String neighbor = graph.getEdgeTarget(edge);
-
                 if (!visited.contains(neighbor)) {
-                    queue.add(neighbor);
+                    stack.push(neighbor);
                     visited.add(neighbor);
                     parentMap.put(neighbor, currentNode);
                 }
             }
         }
-
         System.out.println("No path found between " + src + " and " + dst);
         return null;
     }
@@ -314,8 +284,10 @@ public class DotGraph {
         DotGraph graph = new DotGraph();
         graph.parseGraph("localTest.dot");
         System.out.println(graph.toString());
+        graph.addNodes("z");
+        graph.removeNodes("z");
 
-        Path path = graph.GraphSearch("b", "c", Algorithm.DFS);
+        Path path = graph.GraphSearch("b", "c", Algorithm.BFS);
         if (path != null) {
             System.out.println("Path found: " + path);
         } else {
