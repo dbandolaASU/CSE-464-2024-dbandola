@@ -19,3 +19,14 @@ Refactor 5 Code Simplification: Simplified the code for toString, it takes up le
 Template Design commit link: https://github.com/dbandolaASU/CSE-464-2024-dbandola/commit/0d315f8547cc53a39d1531a71f92bb88af678c9d
 
 I used the template pattern to extract the common steps of BFS and DFS. These were processing neighbors, building the path, checking if the nodes were valid, and the graph traversal. Since BFS used a queue and DFS uses a stack, any code with functions specific to queues and stacks were overridden in the bfs and dfs methods respectively.
+
+
+#3
+
+Strategy Design Pattern commit link: https://github.com/dbandolaASU/CSE-464-2024-dbandola/commit/c714e104787a6e297561a34b9105145d71b2b7f0
+
+I created and interface "SearchStrategy" which declared the method search. I then changed my BFS and DFS methods to implement SearchStrategy. Then in GraphSearch, I made it so that a SearchStrategy is declared and set to either BFS or DFS.
+
+#4
+
+![{721D45A7-6BF8-419A-AE8D-2EE82E58E3A2}](https://github.com/user-attachments/assets/65bd476f-3149-4408-8f70-49614f23e39d)
