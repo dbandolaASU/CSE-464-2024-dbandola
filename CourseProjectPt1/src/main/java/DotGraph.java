@@ -32,6 +32,7 @@ class Path {
     }
 }
 
+// PART THREE #3
 interface SearchStrategy {
     Path search(String src, String dst);
 }
@@ -80,18 +81,7 @@ abstract class XXXTemplate {
     protected abstract boolean isFrontierEmpty();
     protected abstract String getNextNode();
     protected abstract void addToFrontier(String node);
-
-
-    private void processNeighbors(String currentNode) {
-        for (DefaultEdge edge : graph.outgoingEdgesOf(currentNode)) {
-            String neighbor = graph.getEdgeTarget(edge);
-            if (!visited.contains(neighbor)) {
-                addToFrontier(neighbor);
-                visited.add(neighbor);
-                parentMap.put(neighbor, currentNode);
-            }
-        }
-    }
+    protected abstract void processNeighbors(String currentNode);
 
     // build the shortest path
     private Path buildPath(String src, String dst) {
@@ -132,6 +122,19 @@ class BFSGraphSearch extends XXXTemplate implements SearchStrategy {
     protected void addToFrontier(String node) {
         frontier.add(node);
     }
+
+    @Override
+    protected void processNeighbors(String currentNode) {
+        for (DefaultEdge edge : graph.outgoingEdgesOf(currentNode)) {
+            String neighbor = graph.getEdgeTarget(edge);
+            if (!visited.contains(neighbor)) {
+                addToFrontier(neighbor);
+                visited.add(neighbor);
+                parentMap.put(neighbor, currentNode);
+            }
+        }
+    }
+
 }
 
 class DFSGraphSearch extends XXXTemplate implements SearchStrategy{
@@ -161,6 +164,74 @@ class DFSGraphSearch extends XXXTemplate implements SearchStrategy{
     @Override
     protected void addToFrontier(String node) {
         frontier.push(node);
+    }
+
+    @Override
+    protected void processNeighbors(String currentNode) {
+        for (DefaultEdge edge : graph.outgoingEdgesOf(currentNode)) {
+            String neighbor = graph.getEdgeTarget(edge);
+            if (!visited.contains(neighbor)) {
+                addToFrontier(neighbor);
+                visited.add(neighbor);
+                parentMap.put(neighbor, currentNode);
+            }
+        }
+    }
+}
+
+class RNDGraphSearch extends XXXTemplate implements SearchStrategy{
+    private Random random;
+    private Deque<String> frontier;
+
+    public RNDGraphSearch(Graph<String, DefaultEdge> graph) {
+        super(graph);
+        this.random = new Random();
+        this.frontier = new ArrayDeque<>();
+    }
+
+    @Override
+    protected void initializeFrontier(String src) {
+        // put src in frontier
+        frontier.push(src);
+        visited.add(src);
+    }
+
+    @Override
+    protected boolean isFrontierEmpty() {
+        return frontier.isEmpty();
+    }
+
+    @Override
+    protected String getNextNode() {
+        // random node from frontier
+        return frontier.pop();
+    }
+
+    @Override
+    protected void addToFrontier(String node) {
+        // add node back to frontier
+        frontier.push(node);
+    }
+
+    @Override
+    protected void processNeighbors(String currentNode) {
+        List<DefaultEdge> edges = new ArrayList<>(graph.outgoingEdgesOf(currentNode));
+
+        if (!edges.isEmpty()) {
+            // pick random neighbor
+            DefaultEdge randomEdge = edges.get(random.nextInt(edges.size()));
+            String nextNode = graph.getEdgeTarget(randomEdge);
+
+            // print path
+            System.out.println("Visiting Path{nodes=" + visited + "}");
+
+            // Add the randomly selected neighbor to the frontier if it has not been visited
+            if (!visited.contains(nextNode)) {
+                addToFrontier(nextNode);
+                visited.add(nextNode);
+                parentMap.put(nextNode, currentNode);
+            }
+        }
     }
 }
 
@@ -308,7 +379,7 @@ public class DotGraph {
     }
 
     public enum Algorithm {
-        BFS, DFS
+        BFS, DFS, RND
     }
 
     public Path GraphSearch(String src, String dst, Algorithm algo) {
@@ -322,6 +393,9 @@ public class DotGraph {
             case DFS:
                 strategy = new DFSGraphSearch(graph);
                 break;
+            case RND:
+                strategy = new RNDGraphSearch(graph);
+                break;
             default:
                 throw new IllegalArgumentException("Unsupported algorithm: " + algo);
         }
@@ -332,15 +406,17 @@ public class DotGraph {
     public static void main(String[] args) {
         DotGraph graph = new DotGraph();
         graph.parseGraph("input.dot");
-        System.out.println(graph.toString());
-        graph.addNodes("z");
-        graph.removeNodes("z");
 
-        Path path = graph.GraphSearch("a", "h", Algorithm.BFS);
-        if (path != null) {
-            System.out.println("Path found: " + path);
-        } else {
-            System.out.println("No path exists between the specified nodes.");
+        // test rnd walk
+        for (int i = 0; i < 5; i++) {
+            System.out.println("Random Walk Test " + (i + 1));
+            Path path = graph.GraphSearch("a", "h", Algorithm.RND);
+            if (path != null) {
+                System.out.println("Path found: " + path);
+            } else {
+                System.out.println("No path exists between the specified nodes.");
+            }
+            System.out.println();
         }
     }
 }
